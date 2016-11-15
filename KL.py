@@ -8,7 +8,6 @@ Final
 '''
 
 import os
-import re
 import copy
 
 
@@ -22,18 +21,18 @@ def main():
         if dir == '':
             dir = "/home/evan/kl"# input("Enter file path: ")
         
-        
+        #Load graph from file
         f = open(dir, 'r')
         readin(f, KLgraph)
         
+        #Get initial cost and set it aside
         KLgraph.findcost()
         startcost = KLgraph.Extcost
 
         stop = False
-
         while(stop == False):
-            
-            KLiter = []
+        #Main Loop
+            KLiter = [] #Holds the potential graphs for this iteration
             KLiter.append(KLgraph)
             for i in range(int(KLgraph.Nvertices/2)):
                 if i == 0 :
@@ -42,7 +41,8 @@ def main():
                     (v1, v2, g) = KLiter[i].gains()
                     
                     print("Cost: " + str(KLgraph.Extcost))
-                else:              
+                else:
+                    #Save the previous graph, swap the best choice, and get new cost and gains
                     KLiter.append(copy.deepcopy(KLiter[i-1]))
                     KLiter[i].swap(v1, v2)
                     
@@ -53,7 +53,8 @@ def main():
             
             iterMax = 0
             maxIndex = 0
-
+            
+            #Find the best choice
             j = 0
             iterTotal = 0
             for graph in KLiter:
@@ -67,12 +68,14 @@ def main():
             print()
             print("Taking graph " + str(maxIndex))
             
+            #End if there is no new gain
             if(maxIndex == 0):
                 print("orig:")
                 print(startcost)
                 KLgraph.outputgraph()
                 stop = True
 
+            #Select the new graph, and start the next iteration
             else:
                 KLgraph = Graph()
                 KLgraph.Part1 = KLiter[maxIndex].Part1
@@ -87,7 +90,8 @@ def main():
 def readin(file, graph):
         first = False #First line contains total vertices and edges
         current = 1
-        firstB = 0
+        verticesin = 0
+        edgesin = 0
 
         for line in file:
                 if first is False:
@@ -104,7 +108,7 @@ def readin(file, graph):
                         for edge in line.split():
                                 #print("The current edge is between " + str(current) + " and " + str(edge))
                                 edges.append(int(edge)) 
-
+                                edgesin += 1
 
                         if current <= graph.Nvertices/2:
                                 graph.Part1[index] = edges      
@@ -114,9 +118,14 @@ def readin(file, graph):
                                 graph.Part2[index] = edges
 
 
-
+                        verticesin += 1
                         current += 1
 
+        if verticesin != graph.Nvertices:
+            print("There should be " + str(graph.Nvertices) + " vertices, but there are " + str(verticesin))
+        if edgesin/2 != graph.Nedges:
+            print("There should be " + str(graph.Nedges) + " edges, but there are " + str(edgesin/2))
+        
 
 class Graph(object):
         """A  mathematical graph representing a VLSI circuit"""
