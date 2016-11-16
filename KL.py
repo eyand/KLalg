@@ -8,6 +8,7 @@ Final
 '''
 
 import os
+import re
 import copy
 
 
@@ -19,63 +20,66 @@ def main():
         dir = input("Enter directory of input file (press enter for default): ")
         
         if dir == '':
-            dir = "/home/evan/kl"# input("Enter file path: ")
+            dir = "/home/evan/dd2"# input("Enter file path: ")
         
-        #Load graph from file
+        
         f = open(dir, 'r')
         readin(f, KLgraph)
         
-        #Get initial cost and set it aside
         KLgraph.findcost()
         startcost = KLgraph.Extcost
 
         stop = False
+        
+        print("Initial Graph:")
+        KLgraph.outputgraph()
+
         while(stop == False):
-        #Main Loop
-            KLiter = [] #Holds the potential graphs for this iteration
+            
+            KLiter = []
             KLiter.append(KLgraph)
             for i in range(int(KLgraph.Nvertices/2)):
+                
+                print("Pass: ")
+                print(i)
                 if i == 0 :
                     
                     KLiter[i].findcost()
                     (v1, v2, g) = KLiter[i].gains()
                     
                     print("Cost: " + str(KLgraph.Extcost))
-                else:
-                    #Save the previous graph, swap the best choice, and get new cost and gains
+                else:              
                     KLiter.append(copy.deepcopy(KLiter[i-1]))
                     KLiter[i].swap(v1, v2)
                     
                     KLiter[i].findcost()
                     
                     (v1, v2, g) = KLiter[i].gains()
-                #print(i)
             
             iterMax = 0
             maxIndex = 0
             
-            #Find the best choice
+            
             j = 0
+            #iterMax = 0
             iterTotal = 0
             for graph in KLiter:
                 iterTotal += graph.Maxgain
                 
                 if iterTotal > iterMax:
-                    maxIndex = j
+                    maxIndex = j + 1
                     iterMax = iterTotal
                 j += 1
 
-            print()
-            print("Taking graph " + str(maxIndex))
+            #print()
+            #print("Taking graph " + str(maxIndex))
             
-            #End if there is no new gain
-            if(maxIndex == 0):
+            if(iterMax == 0):
                 print("orig:")
                 print(startcost)
                 KLgraph.outputgraph()
                 stop = True
 
-            #Select the new graph, and start the next iteration
             else:
                 KLgraph = Graph()
                 KLgraph.Part1 = KLiter[maxIndex].Part1
@@ -84,14 +88,13 @@ def main():
                 KLgraph.Nvertices = KLiter[maxIndex].Nvertices
                 KLgraph.iteration = KLiter[maxIndex].iteration + 1  
                 print("Iteration " + str(KLgraph.iteration))
-        #KLgraph.outputgraph()
+            KLgraph.outputgraph()
 
 
 def readin(file, graph):
         first = False #First line contains total vertices and edges
         current = 1
-        verticesin = 0
-        edgesin = 0
+        firstB = 0
 
         for line in file:
                 if first is False:
@@ -108,7 +111,7 @@ def readin(file, graph):
                         for edge in line.split():
                                 #print("The current edge is between " + str(current) + " and " + str(edge))
                                 edges.append(int(edge)) 
-                                edgesin += 1
+
 
                         if current <= graph.Nvertices/2:
                                 graph.Part1[index] = edges      
@@ -118,14 +121,9 @@ def readin(file, graph):
                                 graph.Part2[index] = edges
 
 
-                        verticesin += 1
+
                         current += 1
 
-        if verticesin != graph.Nvertices:
-            print("There should be " + str(graph.Nvertices) + " vertices, but there are " + str(verticesin))
-        if edgesin/2 != graph.Nedges:
-            print("There should be " + str(graph.Nedges) + " edges, but there are " + str(edgesin/2))
-        
 
 class Graph(object):
         """A  mathematical graph representing a VLSI circuit"""
@@ -149,7 +147,8 @@ class Graph(object):
                 
                 self.Locked = []
                 self.Maxgain = 0
-                self.iteration = 0
+                self.iteration = 1
+
 
         def findcost(self):
                 extcost = 0
@@ -219,7 +218,7 @@ class Graph(object):
                             else:
                                 self.Gains.append(self.Dcosts[ver] + self.Dcosts[con])
                                 #print(str(ver) + " & " + str(con) + " are not connected")
-                            #print("The gain of " + str(ver) + " and " + str(con) + " is " + str(self.Gains[i]))
+                            print("The gain of " + str(ver) + " and " + str(con) + " is " + str(self.Gains[i]))
 
                             i += 1
             j = 0
