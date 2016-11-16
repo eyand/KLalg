@@ -20,7 +20,7 @@ def main():
         dir = input("Enter directory of input file (press enter for default): ")
         
         if dir == '':
-            dir = "/home/evan/dd2"# input("Enter file path: ")
+            dir = "/home/evan/dd"# input("Enter file path: ")
         
         
         f = open(dir, 'r')
@@ -40,8 +40,8 @@ def main():
             KLiter.append(KLgraph)
             for i in range(int(KLgraph.Nvertices/2)):
                 
-                print("Pass: ")
-                print(i)
+                #print("Pass: ")
+                #print(i)
                 if i == 0 :
                     
                     KLiter[i].findcost()
@@ -75,11 +75,10 @@ def main():
             #print("Taking graph " + str(maxIndex))
             
             if(iterMax == 0):
-                print("orig:")
-                print(startcost)
-                KLgraph.outputgraph()
-                stop = True
-
+                print("Original cost:" + str(startcost))
+                #KLgraph.outputgraph()
+                #stop = True
+                return
             else:
                 KLgraph = Graph()
                 KLgraph.Part1 = KLiter[maxIndex].Part1
@@ -218,7 +217,7 @@ class Graph(object):
                             else:
                                 self.Gains.append(self.Dcosts[ver] + self.Dcosts[con])
                                 #print(str(ver) + " & " + str(con) + " are not connected")
-                            print("The gain of " + str(ver) + " and " + str(con) + " is " + str(self.Gains[i]))
+                            #print("The gain of " + str(ver) + " and " + str(con) + " is " + str(self.Gains[i]))
 
                             i += 1
             j = 0
